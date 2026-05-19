@@ -1,4 +1,4 @@
-package senftresearch.com;
+package senftresearch.com.rendering;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
