@@ -41,19 +41,26 @@ public class Shader {
         int vertex = glCreateShader(GL_VERTEX_SHADER);
         glShaderSource(vertex, vertexCode);
         glCompileShader(vertex);
-        //TODO Check needed here to see if shader compile succeeded
+        if (glGetShaderi(vertex, GL_COMPILE_STATUS) == GL_FALSE) {
+            System.out.println(glGetShaderInfoLog(vertex));
+        }
 
         int fragment = glCreateShader(GL_FRAGMENT_SHADER);
         glShaderSource(fragment, fragmentCode);
         glCompileShader(fragment);
-        //TODO Check needed here to see if shader compile succeeded
 
+        if (glGetShaderi(fragment, GL_COMPILE_STATUS) == GL_FALSE) {
+            System.out.println(glGetShaderInfoLog(fragment));
+        }
 
         id = glCreateProgram();
         glAttachShader(id, vertex);
         glAttachShader(id, fragment);
         glLinkProgram(id);
-        //TODO check needed here to check if the program succeeded
+
+        if (glGetProgrami(id, GL_LINK_STATUS) == GL_FALSE) {
+            System.out.println(glGetProgramInfoLog(id));
+        }
 
         glDeleteShader(vertex);
         glDeleteShader(fragment);

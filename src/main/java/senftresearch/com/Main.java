@@ -1,107 +1,64 @@
 package senftresearch.com;
 
-import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFWErrorCallback;
-import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GL43;
-import org.lwjgl.system.MemoryStack;
-import org.lwjgl.system.MemoryUtil;
+
+import senftresearch.com.rendering.Mesh;
+import senftresearch.com.rendering.Renderer;
 import senftresearch.com.rendering.Shader;
+import senftresearch.com.rendering.Window;
 
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-
-import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL15.*;
-import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL30.glBindVertexArray;
-import static org.lwjgl.opengl.GL30.glGenVertexArrays;
+
 
 
 public class Main {
-
-    private long window;
 
     float[] vertices = {
             -0.5f, -0.5f, 0.0f,
             0.5f, -0.5f, 0.0f,
             0.0f, 0.5f, 0.0f
     };
-    Shader shader;
-    private int vertexBufferObject;
-    private int vertexArrayObject;
+
+    private int width = 800;
+    private int height = 800;
+    private Shader shader;
+    private Window window;
+
     public void run(){
         init();
         loop();
-        glfwFreeCallbacks(window);
-        glfwDestroyWindow(window);
+        window.freeAndDestroy();
         glfwTerminate();
         glfwSetErrorCallback(null).free();
     }
 
     private void init(){
         GLFWErrorCallback.createPrint(System.err).set();
-
+        if (glfwPlatformSupported(GLFW_PLATFORM_X11)) {
+            glfwInitHint(GLFW_PLATFORM, GLFW_PLATFORM_X11);
+        }
         if(!glfwInit()){
             throw new IllegalStateException("Unable to initialize GLFW");
         }
 
-        glfwDefaultWindowHints();
-        window = glfwCreateWindow(300,300, "Test Window", MemoryUtil.NULL, MemoryUtil.NULL);
-        if(window == MemoryUtil.NULL){
-            throw new RuntimeException("Failed to create GLFW window");
-        }
-
-        try(MemoryStack stack = MemoryStack.stackPush()){
-            IntBuffer pWidth = stack.mallocInt(1);
-            IntBuffer pHeight = stack.mallocInt(1);
-            glfwGetWindowSize(window, pWidth, pHeight);
-            // Wayland doesnt allow for positioning of windows so this is useless haha
-            //GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-        }
-        glfwMakeContextCurrent(window);
-        glfwSwapInterval(1);
-        glfwShowWindow(window);
+        window = new Window("Test Window", width, height);
+        GL.createCapabilities();
     }
 
     private void loop(){
-        //I forgot to add this method initially, and it is needed to actually have capabilities in context.
-        GL.createCapabilities();
-        glEnable(GL43.GL_DEBUG_OUTPUT);
-        glEnable(GL43.GL_DEBUG_OUTPUT_SYNCHRONOUS);
-        initVBO();
-        initShader();
-        this.shader.use();
-        while(!glfwWindowShouldClose(window)){
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            glfwSwapBuffers(window);
-            glfwPollEvents();
-            glBindVertexArray(vertexArrayObject);
-            glDrawArrays(GL_TRIANGLES, 0 , 3);
-        }
-
-    }
-
-    private void initShader(){
+        Renderer renderer = Renderer.getInstance();
+        renderer.setViewport(0,0, window.getWidth(), window.getHeight());
+        Mesh mesh = new Mesh(vertices);
         this.shader = new Shader("shaders/basic.vert", "shaders/basic.frag");
-    }
+        while(!window.shouldWindowClose()){
+            renderer.clear();
+            renderer.draw(mesh, shader);
+            window.swapBuffers();
+            glfwPollEvents();
+        }
+        mesh.cleanupMesh();
 
-    private void initVBO(){
-        vertexBufferObject = glGenBuffers();
-        vertexArrayObject = glGenVertexArrays();
-        glBindVertexArray(vertexArrayObject);
-
-        glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
-
-        FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(vertices.length);
-        vertexBuffer.put(vertices).flip();
-        glBufferData(GL_ARRAY_BUFFER, vertexBuffer, GL_STATIC_DRAW);
-
-        glVertexAttribPointer(0,3, GL_FLOAT, false, 3*Float.SIZE,0);
-        glEnableVertexAttribArray(0);
     }
 
     public static void main(String[] args){
