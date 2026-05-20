@@ -10,8 +10,6 @@ import senftresearch.com.rendering.Window;
 
 import static org.lwjgl.glfw.GLFW.*;
 
-
-
 public class Main {
 
     float[] vertices = {
@@ -48,7 +46,7 @@ public class Main {
 
     private void loop(){
         Renderer renderer = Renderer.getInstance();
-        renderer.setViewport(0,0, window.getWidth(), window.getHeight());
+        renderer.setViewport(0,0, window.getWidth()+50, window.getHeight());
         Mesh mesh = new Mesh(vertices);
         this.shader = new Shader("shaders/basic.vert", "shaders/basic.frag");
         while(!window.shouldWindowClose()){
