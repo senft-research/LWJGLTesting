@@ -13,9 +13,17 @@ import static org.lwjgl.glfw.GLFW.*;
 public class Main {
 
     float[] vertices = {
-            -0.5f, -0.5f, 0.0f,
-            0.5f, -0.5f, 0.0f,
-            0.0f, 0.5f, 0.0f
+            0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
+            0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
+            -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
+            -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left
+    };
+
+    float[] textureCoords = {
+            0.0f, 0.0f,
+            1.0f, 0.0f,
+            0.5f, 1.0f
+
     };
 
     private int width = 800;
@@ -48,6 +56,7 @@ public class Main {
         Renderer renderer = Renderer.getInstance();
         renderer.setViewport(0,0, window.getWidth()+50, window.getHeight());
         Mesh mesh = new Mesh(vertices);
+        mesh.AddTexture("src/main/resources/textures/container.jpg");
         this.shader = new Shader("shaders/basic.vert", "shaders/basic.frag");
         while(!window.shouldWindowClose()){
             renderer.clear();

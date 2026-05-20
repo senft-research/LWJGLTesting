@@ -1,6 +1,7 @@
 package senftresearch.com.rendering;
 
 import org.lwjgl.BufferUtils;
+import senftresearch.com.textures.Texture;
 
 import java.nio.FloatBuffer;
 
@@ -22,7 +23,7 @@ public class Mesh {
     private final int vertexArrayObject;
     private final int vertexCount;
     private final int vertexBufferObject;
-
+    private Texture texture;
     /**
      * Constructor that takes in a specified array of float values, to then be used to initialise a vertex array object
      * and its corresponding vertex buffer object. This allows the float array to be read as individual vertexes.
@@ -32,15 +33,20 @@ public class Mesh {
         this.meshVertices = meshVertices;
         vertexBufferObject = glGenBuffers();
         vertexArrayObject = glGenVertexArrays();
-        vertexCount = meshVertices.length / 3;
+        vertexCount = meshVertices.length / 8;
         initVAO();
     }
 
+    public void AddTexture(String texturePath){
+        this.texture = new Texture(texturePath);
+    }
     /**
      * Initialises the vertex array object of the mesh, which contains the pointer and vertex buffer object required for
      * the GPU to read the float array as 3 point vertices.
      */
     private void initVAO(){
+        int stride = 8 * Float.BYTES;
+
         glBindVertexArray(vertexArrayObject);
 
         glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
@@ -49,8 +55,15 @@ public class Mesh {
         vertexBuffer.put(meshVertices).flip();
         glBufferData(GL_ARRAY_BUFFER, vertexBuffer, GL_STATIC_DRAW);
 
-        glVertexAttribPointer(0, 3, GL_FLOAT, false, 3 * Float.BYTES, 0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, false, stride, 0);
         glEnableVertexAttribArray(0);
+
+        glVertexAttribPointer(1, 3, GL_FLOAT, false, stride, 3 * Float.BYTES);
+        glEnableVertexAttribArray(1);
+
+        glVertexAttribPointer(2, 2, GL_FLOAT, false, stride, 6 * Float.BYTES);
+        glEnableVertexAttribArray(2);
+
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
 
@@ -61,6 +74,7 @@ public class Mesh {
      */
     public void render(){
         glBindVertexArray(vertexArrayObject);
+        glBindTexture(GL_TEXTURE_2D, texture.getTextureId());
         glDrawArrays(GL_TRIANGLES, 0, vertexCount);
     }
 
