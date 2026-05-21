@@ -59,8 +59,11 @@ public class Main {
         Mesh mesh = new Mesh(vertices, indices);
         mesh.AddTexture("src/main/resources/textures/container.jpg");
         this.shader = new Shader("shaders/basic.vert", "shaders/basic.frag");
+
         while(!window.shouldWindowClose()){
             renderer.clear();
+            double timeValue = glfwGetTime();
+            shader.setMatrix("transform",TransformUtils.rotateZ((float) timeValue));
             renderer.draw(mesh, shader);
             window.swapBuffers();
             glfwPollEvents();

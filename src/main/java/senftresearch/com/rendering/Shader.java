@@ -1,6 +1,10 @@
 package senftresearch.com.rendering;
 
+import org.joml.Matrix4f;
+import org.lwjgl.system.MemoryStack;
+
 import java.io.InputStream;
+import java.nio.FloatBuffer;
 import java.nio.charset.StandardCharsets;
 
 import static org.lwjgl.opengl.GL20.*;
@@ -64,6 +68,13 @@ public class Shader {
         glUniform1f(glGetUniformLocation(id,name), value);
     }
 
+    public void setMatrix(String name, Matrix4f matrix){
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            FloatBuffer buffer = stack.mallocFloat(16);
+            matrix.get(buffer);
+            glUniformMatrix4fv(glGetUniformLocation(id, name), false, buffer);
+        }
+    }
     /**
      * Initialises the shaders by creating both shaders individually and compiling them, to then link them together in
      * a shader program.
