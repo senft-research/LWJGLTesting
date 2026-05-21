@@ -7,6 +7,7 @@ import senftresearch.com.rendering.Mesh;
 import senftresearch.com.rendering.Renderer;
 import senftresearch.com.rendering.Shader;
 import senftresearch.com.rendering.Window;
+import senftresearch.com.util.TransformUtils;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -63,7 +64,7 @@ public class Main {
         while(!window.shouldWindowClose()){
             renderer.clear();
             double timeValue = glfwGetTime();
-            shader.setMatrix("transform",TransformUtils.rotateZ((float) timeValue));
+            shader.setMatrix("transform", TransformUtils.rotateZ((float) timeValue));
             renderer.draw(mesh, shader);
             window.swapBuffers();
             glfwPollEvents();

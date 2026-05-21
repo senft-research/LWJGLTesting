@@ -1,4 +1,4 @@
-package senftresearch.com;
+package senftresearch.com.util;
 
 import org.joml.Matrix4f;
 
