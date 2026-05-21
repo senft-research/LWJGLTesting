@@ -4,6 +4,7 @@ import org.lwjgl.BufferUtils;
 import senftresearch.com.textures.Texture;
 
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
 import static org.lwjgl.opengl.GL15.*;
@@ -20,19 +21,23 @@ import static org.lwjgl.opengl.GL30.*;
  */
 public class Mesh {
     private final float[] meshVertices;
+    private final int[] meshIndices;
     private final int vertexArrayObject;
     private final int vertexCount;
     private final int vertexBufferObject;
+    private final int elementBufferObject;
     private Texture texture;
     /**
      * Constructor that takes in a specified array of float values, to then be used to initialise a vertex array object
      * and its corresponding vertex buffer object. This allows the float array to be read as individual vertexes.
      * @param meshVertices The floats that represent the vertices of the mesh.
      */
-    public Mesh(float[] meshVertices){
+    public Mesh(float[] meshVertices, int[] meshIndices){
         this.meshVertices = meshVertices;
+        this.meshIndices = meshIndices;
         vertexBufferObject = glGenBuffers();
         vertexArrayObject = glGenVertexArrays();
+        elementBufferObject = glGenBuffers();
         vertexCount = meshVertices.length / 8;
         initVAO();
     }
@@ -55,6 +60,12 @@ public class Mesh {
         vertexBuffer.put(meshVertices).flip();
         glBufferData(GL_ARRAY_BUFFER, vertexBuffer, GL_STATIC_DRAW);
 
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBufferObject);
+
+        IntBuffer indicesBuffer = BufferUtils.createIntBuffer(meshIndices.length);
+        indicesBuffer.put(meshIndices).flip();
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesBuffer, GL_STATIC_DRAW);
+
         glVertexAttribPointer(0, 3, GL_FLOAT, false, stride, 0);
         glEnableVertexAttribArray(0);
 
@@ -75,7 +86,8 @@ public class Mesh {
     public void render(){
         glBindVertexArray(vertexArrayObject);
         glBindTexture(GL_TEXTURE_2D, texture.getTextureId());
-        glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+        glDrawElements(GL_TRIANGLES, meshIndices.length, GL_UNSIGNED_INT, 0);
+        glBindVertexArray(0);
     }
 
     /**

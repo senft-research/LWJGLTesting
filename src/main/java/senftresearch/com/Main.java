@@ -19,6 +19,11 @@ public class Main {
             -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left
     };
 
+    int[] indices = {
+            0, 1, 3,
+            1, 2, 3
+    };
+
     float[] textureCoords = {
             0.0f, 0.0f,
             1.0f, 0.0f,
@@ -55,7 +60,7 @@ public class Main {
     private void loop(){
         Renderer renderer = Renderer.getInstance();
         renderer.setViewport(0,0, window.getWidth()+50, window.getHeight());
-        Mesh mesh = new Mesh(vertices);
+        Mesh mesh = new Mesh(vertices, indices);
         mesh.AddTexture("src/main/resources/textures/container.jpg");
         this.shader = new Shader("shaders/basic.vert", "shaders/basic.frag");
         while(!window.shouldWindowClose()){
