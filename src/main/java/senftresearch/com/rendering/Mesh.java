@@ -27,6 +27,7 @@ public class Mesh {
     private final int vertexBufferObject;
     private final int elementBufferObject;
     private Texture texture;
+
     /**
      * Constructor that takes in a specified array of float values, to then be used to initialise a vertex array object
      * and its corresponding vertex buffer object. This allows the float array to be read as individual vertexes.
@@ -42,9 +43,14 @@ public class Mesh {
         initVAO();
     }
 
+    /**
+     * Adds a new {@linkplain Texture texture object} to the mesh.
+     * @param texturePath The path to the texture object.
+     */
     public void AddTexture(String texturePath){
         this.texture = new Texture(texturePath);
     }
+
     /**
      * Initialises the vertex array object of the mesh, which contains the pointer and vertex buffer object required for
      * the GPU to read the float array as 3 point vertices.
