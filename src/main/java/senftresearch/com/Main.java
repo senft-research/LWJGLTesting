@@ -12,6 +12,7 @@ import static org.lwjgl.glfw.GLFW.*;
 
 public class Main {
 
+    // The meshes are split into 3 segments (first 3 are position, second 3 are colour, final 2 are texture coords)
     float[] vertices = {
             0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
             0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
@@ -19,16 +20,11 @@ public class Main {
             -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left
     };
 
+    // Indices for the element buffer. this tells the mesh which of the coordinates to use to render which triangles
+    // so the value represents the "vertex" to use, e.g: 0 represents the `0.5f, 0.5f, 0.0f` vertex.
     int[] indices = {
             0, 1, 3,
             1, 2, 3
-    };
-
-    float[] textureCoords = {
-            0.0f, 0.0f,
-            1.0f, 0.0f,
-            0.5f, 1.0f
-
     };
 
     private int width = 800;
