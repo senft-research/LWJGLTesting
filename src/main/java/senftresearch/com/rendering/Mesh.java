@@ -26,7 +26,7 @@ public class Mesh {
     private final int vertexCount;
     private final int vertexBufferObject;
     private int elementBufferObject;
-    private boolean indexed;
+    private final boolean indexed;
     private Texture texture;
 
     /**
