@@ -49,6 +49,7 @@ public class Window {
         }
         glfwMakeContextCurrent(windowId);
         glfwSwapInterval(1);
+        glfwSetInputMode(windowId, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         glfwShowWindow(windowId);
 
     }
@@ -91,5 +92,13 @@ public class Window {
      */
     public int getWidth() {
         return width;
+    }
+
+    /**
+     * Returns the unique id of the window.
+     * @return The window id.
+     */
+    public long getWindowId(){
+        return windowId;
     }
 }

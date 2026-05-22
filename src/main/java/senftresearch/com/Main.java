@@ -1,13 +1,11 @@
 package senftresearch.com;
 
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 
-import senftresearch.com.rendering.Mesh;
-import senftresearch.com.rendering.Renderer;
-import senftresearch.com.rendering.Shader;
-import senftresearch.com.rendering.Window;
-import senftresearch.com.util.TransformUtils;
+import senftresearch.com.rendering.*;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -27,6 +25,7 @@ public class Main {
             0, 1, 3,
             1, 2, 3
     };
+    private Vector3f cameraPos = new Vector3f(0.0f, 0.0f, 0.3f);
 
     float[] cubeVertices = {
             // Each of these sets of vertices represent a different face of the cube, with EBOs not being used.
@@ -84,9 +83,12 @@ public class Main {
     private int height = 800;
     private Shader shader;
     private Window window;
+    private Camera camera;
+
 
     public void run(){
         init();
+
         loop();
         window.freeAndDestroy();
         glfwTerminate();
@@ -104,6 +106,7 @@ public class Main {
 
         window = new Window("Test Window", width, height);
         GL.createCapabilities();
+        camera = new Camera(window.getWindowId());
     }
 
     private void loop(){
@@ -115,8 +118,58 @@ public class Main {
 
         while(!window.shouldWindowClose()){
             renderer.clear();
-            double timeValue = glfwGetTime();
-            shader.setMatrix("transform", TransformUtils.rotateX((float) timeValue).mul(TransformUtils.rotateZ(0.5f)));
+            float cameraSpeed = 0.05f;
+            Vector3f position = camera.getCameraPosition();
+            Vector3f cameraFront = camera.getCameraFront();
+            Vector3f cameraUp = camera.getCameraUp();
+
+            if (glfwGetKey(window.getWindowId(), GLFW_KEY_W) == GLFW_PRESS) {
+                position.add(
+                        new Vector3f(cameraFront).normalize().mul(cameraSpeed)
+                );
+            }
+
+
+            if (glfwGetKey(window.getWindowId(), GLFW_KEY_S) == GLFW_PRESS) {
+                position.sub(
+                        new Vector3f(cameraFront).normalize().mul(cameraSpeed)
+                );
+            }
+
+            Vector3f cameraRight = new Vector3f();
+            cameraFront.cross(cameraUp, cameraRight).normalize();
+
+            if (glfwGetKey(window.getWindowId(), GLFW_KEY_D) == GLFW_PRESS) {
+                position.add(
+                        new Vector3f(cameraRight).mul(cameraSpeed)
+                );
+            }
+
+            if (glfwGetKey(window.getWindowId(), GLFW_KEY_A) == GLFW_PRESS) {
+                position.sub(
+                        new Vector3f(cameraRight).mul(cameraSpeed)
+                );
+            }
+
+            if(glfwGetKey(window.getWindowId(), GLFW_KEY_ESCAPE) == GLFW_PRESS){
+                glfwSetWindowShouldClose(window.getWindowId(), true);
+            }
+
+
+
+            Matrix4f projection = new Matrix4f()
+                    .perspective(
+                            (float) Math.toRadians(45.0f),
+                            (float) height / width,
+                            0.1f,
+                            100.0f
+                    );
+
+            Matrix4f model = new Matrix4f();
+
+            shader.setMatrix("model", model);
+            shader.setMatrix("view", camera.getViewMatrix());
+            shader.setMatrix("projection", projection);
             renderer.draw(mesh, shader);
             window.swapBuffers();
             glfwPollEvents();
