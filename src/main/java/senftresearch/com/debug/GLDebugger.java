@@ -45,7 +45,7 @@ public class GLDebugger {
     }
 
     /**
-     * Checks the current error flags for any reportable GL Errors
+     * Checks the current error flags currently recorded deu to a specified operation.
      * @param operationName The name of the operation being guarded.
      * @throws GLException Throws when a GL Error / Errors are identified.
      */
