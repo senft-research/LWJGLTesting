@@ -24,6 +24,7 @@ public class Renderer {
     private Renderer(){
         glEnable(GL43.GL_DEBUG_OUTPUT);
         glEnable(GL43.GL_DEBUG_OUTPUT_SYNCHRONOUS);
+        glEnable(GL_DEPTH_TEST);
     }
 
     /**

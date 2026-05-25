@@ -25,20 +25,34 @@ public class Mesh {
     private final int vertexArrayObject;
     private final int vertexCount;
     private final int vertexBufferObject;
-    private final int elementBufferObject;
+    private int elementBufferObject;
+    private final boolean indexed;
     private Texture texture;
+
+    /**
+     * Constructor for initialising meshes that do not utilise indices (i.e. not using element buffer objects).
+     * @param meshVertices The floats that represent the vertices of the mesh.
+     */
+    public Mesh(float[] meshVertices){
+        this(meshVertices, null);
+    }
 
     /**
      * Constructor that takes in a specified array of float values, to then be used to initialise a vertex array object
      * and its corresponding vertex buffer object. This allows the float array to be read as individual vertexes.
      * @param meshVertices The floats that represent the vertices of the mesh.
+     * @param meshIndices The floats that represent the indices of the mesh (for the purposes of utilising EBOs).
      */
     public Mesh(float[] meshVertices, int[] meshIndices){
         this.meshVertices = meshVertices;
         this.meshIndices = meshIndices;
+        indexed = meshIndices != null && meshIndices.length > 0;
         vertexBufferObject = glGenBuffers();
         vertexArrayObject = glGenVertexArrays();
-        elementBufferObject = glGenBuffers();
+        if(indexed){
+            elementBufferObject = glGenBuffers();
+        }
+
         vertexCount = meshVertices.length / 8;
         initVAO();
     }
@@ -66,11 +80,13 @@ public class Mesh {
         vertexBuffer.put(meshVertices).flip();
         glBufferData(GL_ARRAY_BUFFER, vertexBuffer, GL_STATIC_DRAW);
 
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBufferObject);
+        if(indexed){
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBufferObject);
+            IntBuffer indicesBuffer = BufferUtils.createIntBuffer(meshIndices.length);
+            indicesBuffer.put(meshIndices).flip();
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesBuffer, GL_STATIC_DRAW);
+        }
 
-        IntBuffer indicesBuffer = BufferUtils.createIntBuffer(meshIndices.length);
-        indicesBuffer.put(meshIndices).flip();
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesBuffer, GL_STATIC_DRAW);
 
         glVertexAttribPointer(0, 3, GL_FLOAT, false, stride, 0);
         glEnableVertexAttribArray(0);
@@ -92,7 +108,12 @@ public class Mesh {
     public void render(){
         glBindVertexArray(vertexArrayObject);
         glBindTexture(GL_TEXTURE_2D, texture.getTextureId());
-        glDrawElements(GL_TRIANGLES, meshIndices.length, GL_UNSIGNED_INT, 0);
+        if(indexed){
+            glDrawElements(GL_TRIANGLES, meshIndices.length, GL_UNSIGNED_INT, 0);
+        }
+        else{
+            glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+        }
         glBindVertexArray(0);
     }
 
