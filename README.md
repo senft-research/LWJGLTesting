@@ -12,4 +12,4 @@ them.
 ## Learning Logs
 The following logs contain the primary overview of each step of the learning journey:
 
-- [How did I start learning OpenGL?](docs/how-to-start-learning.md)
+- [How did I start learning OpenGL?](docs/how-did-i-learning.md)
