@@ -13,3 +13,4 @@ them.
 The following logs contain the primary overview of each step of the learning journey:
 
 - [How did I start learning OpenGL?](docs/how-did-i-learning.md)
+- [First Window vs Chucking my Laptop out the Window](docs/first-window.md)
