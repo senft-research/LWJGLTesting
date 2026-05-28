@@ -49,14 +49,99 @@ LLMs that could have got it wrong and I have no idea. Just a plain, definitive, 
 that I can copy-paste into my Maven config. Sometimes the simple methods are honestly the most reliable / quickest.
 
 ## LWJGL had a bad getting started page, lets use it! 
-So, when looking at the "Creating a Window" section, I realised that there were quite a few things simmilar with that of
-the LWJGL website code. Because of that, whilst I did a full readthrough of the "Creating a Window" section of the website,
-I did ultimately take more inspiration from the LWJGL example code block. The main reason was because a few of the methods
-on the LearnOpenGL site were not exact one-to-one in LWJGL, with some custom constants and parameter types being required.
-For example: //TODO example here.
+So, when looking at the "Hello Window" section, I realised that there were quite a few things simmilar with that of
+the LWJGL website code. Because of that, whilst I did a full readthrough of the "Hello Window" section of the website,
+I did ultimately take more inspiration from the LWJGL example code block. 
 
-Hence, the LWJGL code example was invaluable here! However, the code itself had, what I like to call "faff". That is to 
-say, content within the codeblock example was there that was not needed. This is where I have to stress a point I have 
-already made several times in these first few logs... "read content before you action content".
+### Same concept, different implementation
+The main reason for relying on the LWJGL example was because a few of the methods on the LearnOpenGL site were not exactly
+one-to-one in LWJGL, with some custom constants / parameter types being required.
+For example: 
+
+- In C++ / GLFW, the method for creating the window itself is : `GLFWwindow* window = glfwCreateWindow(300, 300, "Hello World!", NULL, NULL);`
+
+- In Java / LWJGL the method for creating a window is is `long window = glfwCreateWindow(300, 300, "Hello World!", NULL, NULL);`
+
+Whilst almost identical, the window value is specifically returned as a `long` in java, and the `NULL` parameters are
+a specific type of `MemoryUtil.NULL`, whereas this is not clarified in the C++ example as `MemoryUtil` is a specific
+LWJGL type. I have to guitily admit I did not clock this initially in my first attempts to learn, and accidentally utilised
+the primitive `null` in Java, and spent a solid 15 minutes scratching my head trying to figure out what I was doing wrong.
+
+### Filtering out the Faff
+Whilst already quite useful to me, the LWJGL example code has a lot of what I like to call "faff". That is to
+say, content within the example was there that was not really needed for learning the basics. This is where I have to 
+stress a point I have already made several times in these first few logs... "read content before you action content".
+
+When I decided the LWJGL code would be useful, I gave it a full read as I was building my "hello window" code example. 
+What I noticed was that there were several parts of the code that were not really present in the LearnOpenGL content I 
+was reading in paralell. Specifically, this segment caught my eye:
+
+```java
+glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
+			if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE )
+				glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
+});
+```
+
+I took a few minutes looking up the documentation for this method and, between my previous knowledge and the docs I found,
+it was clear to me this was demonstrating recording keystrokes to run logic. To clarify, this piece of code checks if the escape 
+key has been pressed and, if it had, it would close the window. 
+
+Whilst cool to now know thats how inputs are handled in LWJGL / GLFW, it was quite useless to me at this point. I had 
+not even begun learning how to render a triangle yet. Why would I care in the slightest about how to do keyboard event
+logic? 
+
+So what did I do? Ignored it of course. In my version of "hello window" I did not bother putting this into the code. The 
+ability to close the window via the escape key is trivial, and not required in the slightest. When learning core concepts
+of something new, I try quite hard to ensure as little of this "faff" is present as possible. I want to be able to wake up
+the next day, come back to my "hello window" example code, and not have to spend 20 minutes figuring out what was important.
+
+My "hello window" code was for one purpose only. Figure out how to make a window pop up on screen. That was it, everything
+else just confuses matters. I dont care how to do keyboard inputs, I don't care how to reposition the window on screen (yet), 
+and many other tiny bits of "faff". So I simply do not add them. This would have been impossible if I had "actioned content
+as I read it", as I would have never had that processing time to recognise it as the faff it was. 
+
+## The issues
+I will be the first to admit, I am an idiot. That is to say, even as a lecturer, even as someone with a fancy degree, my
+ability to make mistakes has always been consistent. I feel too many tutorials / guides pretend the process of learning is
+one of perfection. Seldom do I see mistakes honestly mentioned by tutorials / guides, especially in the modern day. That 
+said, here are 2 of the big mistakes / headaches I encountered during making my "hello window" example work.
+
+### Not that NULL, this NULL!
+
+I have already mentioned how I used `null` originally in the `glfwCreateWindow` method, but I also thought that
+`GLFW_PLATFORM_NULL` was the correct Enum to use in the method, and indeed the IDE / compiler had no issues with this. 
+However, it was not the correct parameter, and LWJGL, in all its wisdom, doesn't have any general "sanity checks" to
+warn the user about this, in my opinion, generally common mistake. In fact, even in the LWJGL code example, the author uses
+`NULL` rather than `MemoryUtil.NULL` making the issue more difficult to sport.
+
+### Why won't you run!?
+When I was first setting up the main logic for the window, I kept getting an error:
+`FATAL ERROR in native method: Thread[main,5,main]: No context is current or a function that is not available in the current context was called. The JVM will abort execution.`
+
+The error itself was quite irksome, as when looking it up online there were many reasons this could happen. It took me 15 
+minutes to figure out a line of code from the LWJGL example, `GL.createCapabilities();`, was required to be ran before any
+of the general GLFW / OpenGL methods could be, or else this error pops up. Essentially the capabilities create the context
+that the error message is complaining about.
+
+This did teach me a valuable lesson though "the debug messages for LWJGL / OpenGL were not going to help me in a straight
+forward way".
+
+
 
 ## Final Thoughts
+I hope throughout this log you can appreciate just how much "prep work" I do before I fully begin to learn something new.
+If I had charged in head first, I would have likely bounced off of LWJGL quite quickly. Between the download issues, the 
+confusing  differences between LWJGL and bog-standard C++ GLFW, and the small mistakes that took way more time than I would
+have liked, this process could have easily seen me waving a white flag in defeat. 
+
+And yet, through both the prep work, and the ability to take a step back from a problem, and analyse it before trying to
+resolve it straight away, you can usually find your way. Not only that, but you make your way to the end of a core concept
+with a richer / in-depth understanding of what you are trying to learn. It is why I am not a big fan of utilising LLMs 
+when I am learning a new skill. Yes, a lot of the time they are great at **doing** the basics. However, without encountering
+the issues that LLMs help you avoid, you lose out on challenges that genuinely help you understand the content in a more
+in-depth way.
+
+To summarise? Reading the content before utilising it can save you a lot of headaches and issues. Furthermore, the issues 
+that you will inevitably encounter, if you embrace them / their challenges, can end up being some of the greatest lessons 
+you can be taught!
