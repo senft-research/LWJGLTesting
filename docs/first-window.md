@@ -49,5 +49,14 @@ LLMs that could have got it wrong and I have no idea. Just a plain, definitive, 
 that I can copy-paste into my Maven config. Sometimes the simple methods are honestly the most reliable / quickest.
 
 ## LWJGL had a bad getting started page, lets use it! 
+So, when looking at the "Creating a Window" section, I realised that there were quite a few things simmilar with that of
+the LWJGL website code. Because of that, whilst I did a full readthrough of the "Creating a Window" section of the website,
+I did ultimately take more inspiration from the LWJGL example code block. The main reason was because a few of the methods
+on the LearnOpenGL site were not exact one-to-one in LWJGL, with some custom constants and parameter types being required.
+For example: //TODO example here.
+
+Hence, the LWJGL code example was invaluable here! However, the code itself had, what I like to call "faff". That is to 
+say, content within the codeblock example was there that was not needed. This is where I have to stress a point I have 
+already made several times in these first few logs... "read content before you action content".
 
 ## Final Thoughts
