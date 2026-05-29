@@ -2,13 +2,14 @@ package senftresearch.com.rendering;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import senftresearch.com.update.Updateable;
 
 import static org.lwjgl.glfw.GLFW.*;
 
 /**
  * Represents the positioning of the view space of the monitor from the context of a "Camera" object viewing the scene.
  */
-public class Camera {
+public class Camera implements Updateable {
 
     private final Vector3f cameraPosition = new Vector3f(0.0f, 0.0f, 3.0f);
     private final Vector3f cameraFront = new Vector3f(0.0f, 0.0f, -1.0f);
@@ -62,32 +63,6 @@ public class Camera {
             previousYPos = yPos;
          });
 
-        glfwSetKeyCallback(windowId, (windowHandle, key, scancode, action, mods ) -> {
-
-
-            Vector3f cameraRight = initCameraRight();
-            switch (key){
-                case GLFW_KEY_W:
-                    this.cameraPosition.add(new Vector3f(cameraFront).normalize().mul(cameraSpeed));
-                    break;
-
-                case GLFW_KEY_S:
-                    this.cameraPosition.sub(
-                            new Vector3f(cameraFront).normalize().mul(cameraSpeed)
-                    );
-                    break;
-                case GLFW_KEY_D:
-                    this.cameraPosition.add(
-                            new Vector3f(cameraRight).mul(cameraSpeed)
-                    );
-                    break;
-                case GLFW_KEY_A:
-                    this.cameraPosition.sub(
-                            new Vector3f(cameraRight).mul(cameraSpeed)
-                    );
-                    break;
-            }
-        });
         this.projectionMatrix = new Matrix4f()
                 .perspective(
                         (float) Math.toRadians(45.0f),
@@ -117,40 +92,39 @@ public class Camera {
 
     /**
      * Runs the various key checks that may influence the camera's direction and position per loop.
-     * @param window The window where the camera resides.
+     * @param windowId The id of the Window where the camera resides.
      */
-    public void loopLogic(Window window){
+    public void loopLogic(long windowId){
 
-        if (glfwGetKey(window.getWindowId(), GLFW_KEY_W) == GLFW_PRESS) {
+        if (glfwGetKey(windowId, GLFW_KEY_W) == GLFW_PRESS) {
             this.cameraPosition.add(
                     new Vector3f(cameraFront).normalize().mul(cameraSpeed)
             );
         }
 
 
-        if (glfwGetKey(window.getWindowId(), GLFW_KEY_S) == GLFW_PRESS) {
+        if (glfwGetKey(windowId, GLFW_KEY_S) == GLFW_PRESS) {
             this.cameraPosition.sub(
                     new Vector3f(cameraFront).normalize().mul(cameraSpeed)
             );
         }
 
-        Vector3f cameraRight = new Vector3f();
-        cameraFront.cross(cameraUp, cameraRight).normalize();
+        Vector3f cameraRight = initCameraRight();
 
-        if (glfwGetKey(window.getWindowId(), GLFW_KEY_D) == GLFW_PRESS) {
+        if (glfwGetKey(windowId, GLFW_KEY_D) == GLFW_PRESS) {
             this.cameraPosition.add(
                     new Vector3f(cameraRight).mul(cameraSpeed)
             );
         }
 
-        if (glfwGetKey(window.getWindowId(), GLFW_KEY_A) == GLFW_PRESS) {
+        if (glfwGetKey(windowId, GLFW_KEY_A) == GLFW_PRESS) {
             this.cameraPosition.sub(
                     new Vector3f(cameraRight).mul(cameraSpeed)
             );
         }
 
-        if(glfwGetKey(window.getWindowId(), GLFW_KEY_ESCAPE) == GLFW_PRESS){
-            glfwSetWindowShouldClose(window.getWindowId(), true);
+        if(glfwGetKey(windowId, GLFW_KEY_ESCAPE) == GLFW_PRESS){
+            glfwSetWindowShouldClose(windowId, true);
         }
     }
 
@@ -189,4 +163,8 @@ public class Camera {
     }
 
 
+    @Override
+    public void update(long windowId) {
+        loopLogic(windowId);
+    }
 }

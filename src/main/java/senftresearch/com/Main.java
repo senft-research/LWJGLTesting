@@ -5,6 +5,10 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 
 import senftresearch.com.rendering.*;
+import senftresearch.com.update.Updateable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -25,6 +29,7 @@ public class Main {
             1, 2, 3
     };
 
+    List<Updateable> updateables = new ArrayList<>();
 
     float[] cubeVertices = {
             // Each of these sets of vertices represent a different face of the cube, with EBOs not being used.
@@ -106,6 +111,7 @@ public class Main {
         window = new Window("Test Window", width, height);
         GL.createCapabilities();
         camera = new Camera(window);
+        this.updateables.add(camera);
     }
 
     private void loop(){
@@ -118,7 +124,7 @@ public class Main {
         while(!window.shouldWindowClose()){
             renderer.clear();
 
-            camera.loopLogic(window);
+            this.updateables.forEach(updateable -> updateable.update(window.getWindowId()));
             setShaderCameraUniforms();
             renderer.draw(mesh, shader);
 
