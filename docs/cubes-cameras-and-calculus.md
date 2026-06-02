@@ -1,4 +1,4 @@
-# Cubes, Cameras and Calculus
+# Cubes, Comments, Cameras, and Calculus
 So, after getting the first Triangles (coloured and textured) working, it was time to dive into 3D rendering. This would be
 quite the step-up for myself, as it would mean having to handle objects with a ridiculous amount of vertices. Then, I would
 need to find a way to easily move these massive arrays around the "render space", as I colloquially called it in my head,
