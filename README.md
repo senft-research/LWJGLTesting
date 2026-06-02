@@ -15,3 +15,4 @@ The following logs contain the primary overview of each step of the learning jou
 - [How did I start learning OpenGL?](docs/how-did-i-learning.md)
 - [First Window vs Chucking my Laptop out the Window](docs/first-window.md)
 - [Hello Triangle, Goodbye Mega-Classes!](docs/first-triangle-render.md)
+- [Cubes, Comments, Cameras, and Calculus](docs/cubes-cameras-and-calculus.md)
